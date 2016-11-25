@@ -590,11 +590,11 @@
 			check_childred_modifications(current_organ)
 			req_update_icon = 1
 
-
+/*
 /datum/preferences/proc/GetLoadOutPage()
 //	loadout
 /datum/preferences/proc/HandleLoadOutTopic(mob/user, list/href_list)
-
+*/
 
 /datum/preferences/proc/GetOccupationPage()
 	if(!job_master)
