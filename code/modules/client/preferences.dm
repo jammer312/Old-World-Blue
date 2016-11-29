@@ -1559,15 +1559,6 @@ var/global/list/special_roles = list( //keep synced with the defines BE_* in set
 				var/tattoo2 = tattoo_data["[name]2"]
 				O.tattoo = tattoo ? tattoo : 0
 				O.tattoo2 = tattoo2 ? tattoo2 : 0
-	for(var/name in character.internal_organs_by_name)
-		var/status = organ_data[name]
-		if(status)
-			var/obj/item/organ/internal/I = character.internal_organs_by_name[name]
-			if(I)
-				if(status == "assisted")
-					I.mechassist()
-				else if(status == "mechanical")
-					I.robotize()
 
 	if(backbag > backbaglist.len || backbag < 1)
 		backbag = pick(backbaglist.len)
@@ -1575,7 +1566,7 @@ var/global/list/special_roles = list( //keep synced with the defines BE_* in set
 
 	//Debugging report to track down a bug, which randomly assigned the plural gender to people.
 	if(character.gender in list(PLURAL, NEUTER))
-		if(isliving(src)) //Ghosts get neuter by default
+		if(isliving(character)) //Ghosts get neuter by default
 			message_admins("[character] ([character.ckey]) has spawned with their gender as plural or neuter. Please notify coders.")
 			character.gender = MALE
 

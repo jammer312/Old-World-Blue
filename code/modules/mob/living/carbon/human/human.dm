@@ -157,7 +157,7 @@
 
 
 /mob/living/carbon/human/blob_act()
-	if(stat == 2)	return
+	if(stat == DEAD)	return
 	show_message("\red The blob attacks you!")
 	var/dam_zone = pick(BP_CHEST, BP_L_HAND, BP_R_HAND, BP_L_LEG, BP_R_LEG)
 	var/obj/item/organ/external/affecting = get_organ(ran_zone(dam_zone))
@@ -212,7 +212,7 @@
 
 /mob/living/carbon/human/show_inv(mob/user as mob)
 	// TODO :  Change to incapacitated() on merge.
-	if(user.stat || user.lying || user.resting || user.buckled || !user.Adjacent(src))
+	if(user.stat || user.lying || user.resting || !user.Adjacent(src))
 		return
 
 	var/obj/item/clothing/under/suit = null
@@ -923,6 +923,51 @@
 		gloves.germ_level += n
 	else
 		germ_level += n
+
+/mob/living/carbon/human/proc/rebuild_organs(var/list/modifications, var/list/colors)
+	if(modifications && !istype(modifications))
+		// AKA rebuild data from preference
+		if(istype(modifications, /datum/preferences))
+			var/datum/preferences/P = modifications
+			modifications = P.modifications_data
+			if(!istype(colors)) // Can be override
+				colors = P.modifications_colors
+		else //AKA get data from mob preference, if possible
+			if(!isnum(modifications))
+				world.log << "ERROR. Rebuild modification from unknow type. [modifications], type = [modifications.type]."
+			if(client && client.prefs)
+				modifications = client.prefs.modifications_data
+				colors = client.prefs.modifications_colors
+			else
+				modifications = null
+
+	for(var/organ in organs + internal_organs)
+		qdel(organ)
+
+	var/organ_type = null
+	var/datum/organ_description/OD = null
+	var/datum/body_modification/BM = null
+	for(var/organ_tag in species.has_limbs)
+		OD = species.has_limbs[organ_tag]
+		BM = modifications[organ_tag]
+		if(BM && BM.replace_limb)
+			organ_type = BM.replace_limb
+		else
+			organ_type = OD.default_type
+		var/obj/item/organ/O = new (src, OD, colors[organ_tag])
+		if(BM)
+			BM.apply(O, colors[organ_tag])
+
+	for(var/organ_tag in species.has_organ)
+		BM = modifications[organ_tag]
+		if(BM && BM.replace_limb)
+			organ_type = BM.replace_limb
+		else
+			organ_type = species.has_organ[organ_tag]
+		var/obj/item/organ/O = new organ_type(src)
+		if(BM)
+			BM.apply(O, colors[organ_tag])
+	return 1
 
 /mob/living/carbon/human/revive()
 

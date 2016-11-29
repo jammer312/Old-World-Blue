@@ -84,11 +84,6 @@
 	display_name = "tie-scarf, christmas"
 	path = /obj/item/clothing/accessory/scarf/christmas
 
-/datum/gear/suspenders
-	display_name = "suspenders"
-	path = /obj/item/clothing/accessory/suspenders
-	slot = slot_tie
-
 /datum/gear/accessory/suitjacket
 	display_name = "suit jacket, tan"
 	path = /obj/item/clothing/accessory/tan_jacket
@@ -220,37 +215,6 @@
 	display_name = "combi-tool"
 	path = /obj/item/weapon/combitool
 	cost = 3*/
-
-/datum/gear/skrell_chain
-	display_name = "skrell headtail-wear, female, chain"
-	path = /obj/item/clothing/ears/skrell/chain
-	sort_category = "ears"
-	whitelisted = "Skrell"
-
-/datum/gear/skrell_plate
-	display_name = "skrell headtail-wear, male, bands"
-	path = /obj/item/clothing/ears/skrell/band
-	sort_category = "ears"
-	whitelisted = "Skrell"
-
-/datum/gear/skrell_cloth_male
-	display_name = "skrell headtail-wear, male, cloth"
-	path = /obj/item/clothing/ears/skrell/cloth_male
-	sort_category = "ears"
-	whitelisted = "Skrell"
-
-/datum/gear/skrell_cloth_female
-	display_name = "skrell headtail-wear, female, cloth"
-	path = /obj/item/clothing/ears/skrell/cloth_female
-	sort_category = "ears"
-	whitelisted = "Skrell"
-
-/datum/gear/skrell_xilobeads
-	display_name = "skrell xilobeads"
-	path = /obj/item/clothing/ears/skrell/xilobeads
-	cost = 2
-	sort_category = "ears"
-	whitelisted = "Skrell"
 
 /datum/gear/pants
 	display_name = "Pants, classic jeans"

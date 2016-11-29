@@ -64,3 +64,8 @@
 	display_name = "tie, socially disgraceful"
 	path = /obj/item/clothing/accessory/horrible
 
+/datum/gear/suspenders
+	display_name = "suspenders"
+	path = /obj/item/clothing/accessory/suspenders
+	slot = slot_tie
+

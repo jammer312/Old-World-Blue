@@ -26,41 +26,30 @@ var/global/list/modifications_types = list(
 /datum/body_modification
 	var/name = ""
 	var/short_name = ""
-	var/id = ""				// For savefile. Must be unique.
-	var/desc = ""			// Description.
-	var/list/body_parts = list(BP_CHEST, "chest2", BP_HEAD, BP_GROIN, BP_L_ARM, BP_R_ARM, BP_L_HAND, BP_R_HAND, BP_L_LEG, BP_R_LEG,\
-		BP_L_FOOT, BP_R_FOOT, O_HEART, O_LUNGS, O_LIVER, O_BRAIN, O_EYES)		// For sorting'n'selection optimization.
+	var/id = ""					// For savefile. Must be unique.
+	var/desc = ""				// Description.
+	var/list/body_parts = null	// For sorting'n'selection optimization.
 	var/list/allowed_species = list("Human")	// Species restriction.
-	var/list/allow_body_builds=null				// The "main sprite question" yeah.
-	var/replace_limb = null						// To draw usual limb or not.
+	var/replace_limb = null		// To draw usual limb or not.
 	var/mob_icon = ""
 	var/icon/icon = 'icons/mob/human_races/body_modification.dmi'
 	var/nature = MODIFICATION_ORGANIC
 
-	proc/get_mob_icon(organ, body_build = 0, color="#ffffff", gender = MALE)	//Use in setup character only
+	proc/get_mob_icon(organ_tag, body_build = "", color="#ffffff", gender = MALE)	//Use in setup character only
 		return new/icon('icons/mob/human.dmi', "blank")
 
-	proc/is_allowed(var/organ = "", datum/preferences/P)
-		if(!organ || !(organ in body_parts))
-			usr << "[name] isn't useable for [organ_tag_to_name[organ]]"
+	proc/is_allowed(var/organ_tag, datum/preferences/P)
+		if(!organ_tag)
 			return 0
-		if(allowed_species && !(P.species in allowed_species))
-			usr << "[name] isn't allowed for [P.species]"
+		if(!organ_tag in S.has_limb && !organ_tag in S.has_organ)
+			usr << "[name] isn't useable for you"
 			return 0
-		if(allow_body_builds && !(P.body in allow_body_builds))
-			usr << "[name] isn't allowed for [P.body] body"
+		if(allowed_species && !(P.current_species.get_bodytype() in allowed_species))
+			usr << "[name] isn't allowed for [S.plural_name]"
 			return 0
-		var/list/organ_data = organ_structure[organ]
-		if(organ_data)
-			var/parent_organ = organ_data["parent"]
-			if(parent_organ)
-				var/datum/body_modification/parent = P.get_modification(parent_organ)
-				if(parent.nature > nature)
-					usr << "[name] can't be attached to [parent.name]"
-					return 0
 		return 1
 
-	proc/apply_to_mob(var/mob/living/carbon/human/H, var/slot)
+	proc/apply(var/obj/item/organ/O, var/color)
 		return 1
 
 /datum/body_modification/nothing
@@ -69,8 +58,31 @@ var/global/list/modifications_types = list(
 	short_name = "nothing"
 	desc = "Normal organ."
 	allowed_species = null
+	body_parts = list(BP_CHEST, "chest2", BP_HEAD, BP_GROIN, BP_L_ARM, BP_R_ARM, BP_L_HAND, BP_R_HAND, BP_L_LEG, BP_R_LEG,\
+		BP_L_FOOT, BP_R_FOOT, O_HEART, O_LUNGS, O_LIVER, O_BRAIN, O_EYES)
 
-/datum/body_modification/amputation
+/datum/body_modification/nothing/is_allowed()
+	return 1
+
+
+/datum/body_modification/external/is_allowed(var/organ_tag, datum/preferences/P)
+	if(!..())
+		return 0
+
+	if(!organ_tag in S.has_limb)
+		usr << "[name] isn't useable for you"
+		return 0
+
+	var/datum/organ_description/OD = S.has_limb[organ_tag]
+	var/parent_organ = OD.parent_organ
+	if(parent_organ)
+		var/datum/body_modification/parent = P.get_modification(parent_organ)
+		if(parent.nature > nature)
+			usr << "[name] can't be attached to [parent.name]"
+			return 0
+
+
+/datum/body_modification/external/amputation
 	name = "Amputated"
 	short_name = "Amputated"
 	id = "amputated"
@@ -79,7 +91,7 @@ var/global/list/modifications_types = list(
 	replace_limb = 1
 	nature = MODIFICATION_REMOVED
 
-/datum/body_modification/tattoo
+/datum/body_modification/external/tattoo
 	name = "Abstract"
 	short_name = "T: Abstract"
 	desc = "Simple tattoo (use flavor)."
@@ -99,7 +111,7 @@ var/global/list/modifications_types = list(
 		I.Blend(color, ICON_ADD)
 		return I
 
-	apply_to_mob(var/mob/living/carbon/human/H, var/slot)
+	apply(var/mob/living/carbon/human/H, var/slot)
 		var/obj/item/organ/external/E = H.organs_by_name[slot]
 		if(findtext(slot, "2"))
 			E.tattoo2 = mob_icon
@@ -107,7 +119,7 @@ var/global/list/modifications_types = list(
 			E.tattoo = mob_icon
 
 
-/datum/body_modification/tattoo/tajara_stripes
+/datum/body_modification/external/tattoo/tajara_stripes
 	name = "Tiger Stripes"
 	short_name = "T: Tiger"
 	desc = "A great camouflage to hide in long grass."
@@ -117,7 +129,7 @@ var/global/list/modifications_types = list(
 	mob_icon = "2"
 	allowed_species = list("Tajara")
 
-/datum/body_modification/tattoo/tribal_markings
+/datum/body_modification/external/tattoo/tribal_markings
 	name = "Unathi Tribal Markings"
 	short_name = "T: Tribal"
 	desc = "A specific identification and beautification marks designed on the face or body."
@@ -127,7 +139,7 @@ var/global/list/modifications_types = list(
 	mob_icon = "2"
 	allowed_species = list("Unathi")
 
-/datum/body_modification/prosthesis
+/datum/body_modification/external/prosthesis
 	name = "Unbranded"
 	id = "prosthesis_basic"
 	desc = "Simple, brutal and reliable prosthesis"
@@ -144,13 +156,13 @@ var/global/list/modifications_types = list(
 	get_mob_icon(organ, body_build = 0)
 		return new/icon(icon, "[organ]_[mob_icon]_[body_build]")
 
-/datum/body_modification/prosthesis/bishop
+/datum/body_modification/external/prosthesis/bishop
 	name = "Bishop"
 	id = "prosthesis_bishop"
 	desc = "Prosthesis with white polymer casing with blue holo-displays."
 	mob_icon = "bishop"
 
-/datum/body_modification/prosthesis/hesphaistos
+/datum/body_modification/external/prosthesis/hesphaistos
 	name = "Hesphaistos"
 	id = "prosthesis_hesphaistos"
 	desc = "Prosthesis with militaristic black and green casing with gold stripes."
@@ -158,16 +170,15 @@ var/global/list/modifications_types = list(
 	get_mob_icon(organ, body_build = 0)
 		return new/icon('icons/mob/human_races/cyberlimbs/hesphaistos.dmi', "[organ]_[body_build]")
 
-/datum/body_modification/prosthesis/zenghu
+/datum/body_modification/external/prosthesis/zenghu
 	name = "Zeng-Hu"
 	id = "prosthesis_zenghu"
 	desc = "Prosthesis with rubbery fleshtone covering with visible seams."
-	allow_body_builds = list("Default")
 
 	get_mob_icon(organ, body_build = 0)
 		return new/icon('icons/mob/human_races/cyberlimbs/zenghu.dmi', "[organ]_[body_build]")
 
-/datum/body_modification/prosthesis/xion
+/datum/body_modification/external/prosthesis/xion
 	name = "Xion"
 	id = "prosthesis_xion"
 	desc = "Prosthesis with minimalist black and red casing."
@@ -175,10 +186,9 @@ var/global/list/modifications_types = list(
 	get_mob_icon(organ, body_build = 0)
 		return new/icon('icons/mob/human_races/cyberlimbs/xion.dmi', "[organ]_[body_build]")
 
-/datum/body_modification/prosthesis/enforcer_charge
+/datum/body_modification/external/prosthesis/enforcer_charge
 	name = "Enforcer Charge"
 	id = "prosthesis_enforcer"
-	allow_body_builds = list("Default")
 	mob_icon = "cyber"
 
 /datum/body_modification/prosthesis/eyecam
