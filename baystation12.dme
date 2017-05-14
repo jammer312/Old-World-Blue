@@ -1761,6 +1761,7 @@
 #include "code\modules\virus2\helpers.dm"
 #include "code\modules\virus2\isolator.dm"
 #include "code\modules\virus2\items_devices.dm"
+#include "code\modules\wizardry\orb.dm"
 #include "code\modules\xenoarchaeology\chemistry.dm"
 #include "code\modules\xenoarchaeology\geosample.dm"
 #include "code\modules\xenoarchaeology\manuals.dm"
