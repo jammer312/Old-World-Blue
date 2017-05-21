@@ -102,7 +102,7 @@
 	if(!src.loc) //idk where it is but probably it shouldn't collapse there
 		return
 	if(src.throwing)
-		return //pretty stabile on-fly
+		return //pretty stable on-fly
 	if(holder&&(holder==creator||holder.mind&&wizards.is_antagonist(holder.mind)))//creator and mages can hold orbs	
 		return
 	else
@@ -133,7 +133,7 @@
 		holder=null
 	handle_instability()
 	effect_aura(process_delay)
-
+/*//I think those are not needed anymore
 /obj/item/orb/pickup(mob/user)
 	world<<"Picked up"
 	holder=user
@@ -142,7 +142,7 @@
 	world<<"Dropped"
 	holder=null
 	handle_instability()
-
+*/
 /obj/item/orb/Destroy()
 	effect_destruction()
 	..()
