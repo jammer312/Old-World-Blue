@@ -4,7 +4,7 @@
 	check_armour="magic"
 //rewrite to allow launching from objects other than guns
 /obj/item/projectile/magic_projectile/launch(atom/target, mob/user, obj/item/launcher, var/target_zone, var/x_offset=0, var/y_offset=0)
-	var/turf/curloc = get_turf(user)
+	var/turf/curloc = get_turf(launcher)
 	var/turf/targloc = get_turf(target)
 	if (!istype(targloc) || !istype(curloc))
 		return 1

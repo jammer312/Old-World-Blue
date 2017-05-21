@@ -9,7 +9,6 @@
 	activate(atom/target,mob/user=usr,params,power=1.0)
 		if(!target)
 			target=get_turf(orb)
-		sleep(10)
 		var/extrange=defrange*sqrt(power)
 		var/targets=list()
 		for(var/turf/T in orange(target,extrange))
