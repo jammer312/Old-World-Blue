@@ -55,7 +55,7 @@
 	if(cooldown_aura>0)
 		return
 	cooldown_aura=initial(cooldown_aura)
-	aura.activate(pdelay)
+	aura.activate(delay)
 	return 1
 
 /obj/item/orb/proc/effect_hit(atom/target,mob/user,params) //called when orb is used on something
