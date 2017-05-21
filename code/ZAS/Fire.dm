@@ -119,6 +119,7 @@ turf/proc/hotspot_expose(exposed_temperature, exposed_volume, soh = 0)
 	layer = TURF_LAYER
 
 	var/firelevel = 1 //Calculated by gas_mixture.calculate_firelevel()
+	var/skip=0
 
 /obj/fire/process()
 	. = 1
@@ -201,9 +202,38 @@ turf/proc/hotspot_expose(exposed_temperature, exposed_volume, soh = 0)
 	return heat2color(temperature)
 
 /obj/fire/Destroy()
-	RemoveFire()
+	if(!skip)
+		RemoveFire()
 
 	..()
+
+/obj/fire/magic
+	color="#d032db"
+	skip=1
+	process()
+		if(firelevel<=0)
+			qdel(src)
+			return
+		if(firelevel > 6)
+			icon_state = "3"
+			set_light(7, 3)
+		else if(firelevel > 2.5)
+			icon_state = "2"
+			set_light(5, 2)
+		else
+			icon_state = "1"
+			set_light(3, 1)
+		firelevel-=0.5
+		for(var/mob/living/L in loc)
+			L.fire_act()
+
+	New(newloc,fl)
+		firelevel=fl
+		spawn()
+			while(firelevel>0)
+				process()
+				sleep(2)
+			qdel(src)
 
 /obj/fire/proc/RemoveFire()
 	var/turf/T = loc

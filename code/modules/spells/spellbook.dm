@@ -51,6 +51,7 @@
 			<A href='byond://?src=\ref[src];spell_choice=horseman'>Curse of the Horseman</A> (15)<BR>
 			<I>This spell will curse a person to wear an unremovable horse mask (it has glue on the inside) and speak like a horse. It does not require wizard garb.</I><BR>
 			<A href='byond://?src=\ref[src];spell_choice=noclothes'>Remove Clothes Requirement</A> <b>Warning: this takes away 2 spell choices.</b><BR>
+			<A href='byond://?src=\ref[src];spell_choice=summon_test'>Test summon</A> (15)<BR>
 			<HR>
 			<B>Artefacts:</B><BR>
 			Powerful items imbued with eldritch magics. Summoning one will count towards your maximum number of spells.<BR>
@@ -179,6 +180,9 @@
 						if("horseman")
 							H.add_spell(new/spell/targeted/equip_item/horsemask)
 							temp = "You have learned curse of the horseman."
+						if("summon_test")
+							H.add_spell(new/spell/summoning/orb/test)
+							temp = "OK"
 						if("staffchange")
 							new /obj/item/weapon/gun/energy/staff(get_turf(H))
 							temp = "You have purchased a staff of change."
